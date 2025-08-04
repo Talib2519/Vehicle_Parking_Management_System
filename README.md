@@ -43,33 +43,6 @@ A comprehensive multi-user web application for managing parking lots, parking sp
 - **Data Visualization**: Matplotlib
 - **Authentication**: Flask Sessions
 
-## Project Structure
-
-vehicle-parking-system/
-├── app.py                          # Main application entry point
-├── application/
-│   ├── config.py                   # Application configuration
-│   ├── database.py                 # Database initialization
-│   ├── models.py                   # Database models
-│   └── routes.py                   # Application routes
-├── templates/
-│   ├── index.html                  # Landing page
-│   ├── login.html                  # Login page
-│   ├── register.html               # Registration page
-│   ├── dashboard.html              # Main dashboard (Admin/User)
-│   ├── user.html                   # User management page
-│   ├── search_page.html            # Search functionality
-│   ├── summary.html                # Admin analytics
-│   └── user_summary.html           # User analytics
-├── static/
-│   ├── style.css                   # Landing page styles
-│   ├── login.css                   # Login page styles
-│   ├── register.css                # Registration page styles
-│   ├── dashboard.css               # Dashboard styles
-│   └── images/
-│       └── p1.jpg                  # Background image
-└── README.md
-
 ## Database Schema
 
 ### Users Table
