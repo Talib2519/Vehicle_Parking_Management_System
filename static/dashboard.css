@@ -1,0 +1,50 @@
+body{
+    width: 100vw;
+    height: 100vh;
+    background: url('images/p1.jpg')no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav
+{
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.content-box
+{
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+
+    border-radius: 0px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+#b1{
+    padding: 2px 15px;
+    border: 0.5px solid black;
+    border-radius: 15px;
+    box-shadow: 2px 2px 12px black;
+    font-size: 17px;
+}
+
+#b1:hover
+{
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+.heading h1 {
+    font-size: 40px;
+    color: white;
+    text-shadow: 1px 1px 6px rgb(197, 194, 194);
+    text-align: center;
+    margin-top: 30px;
+}

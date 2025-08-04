@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+        {% if role == 'admin' %}
+            <nav class="navbar navbar-expand-lg" 
+                style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #2c2c2c, #2b2b2b); width: 100%;">   
+                <div class="container-fluid d-flex justify-content-between w-100 px-3">
+                    <!-- Left: Welcome Admin -->
+                    <a class="navbar-brand me-auto text-white" href="{{ url_for('dashboard') }}">Welcome {{username}}</a>
+
+                    <!-- Center: Navigation Links -->
+                    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                        <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('dashboard') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('user') }}">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('search_page') }}">Search</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('summary') }}">Summary</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</a>                              
+                            <!-- Edit Profile Modal -->
+                            <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content text-white" 
+                                style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #2c2c2c, #2b2b2b);">
+                                    <div class="modal-header">
+                                    <h3 class="modal-title" id="editProfileModalLabel">Edit Profile</h3>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <form action="{{ url_for('edit_profile') }}" method="POST">
+                                        <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" value="{{ username }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="text" class="form-control" id="password" name="password" value="{{ password }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <input type="text" class="form-control" id="address" name="address" value="{{ address }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                        <label for="pincode" class="form-label">Pincode</label>
+                                        <input type="number" class="form-control" id="pincode" name="pincode" value="{{ session['user_pincode'] }}" required>
+                                        </div>
+                                        <div class="text-center mt-4">
+                                        <button type="submit" class="btn btn-success">Save Changes</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+  
+                        </li>
+                        </ul>
+                    </div>
+
+                    <!-- Right: Logout Button -->
+                    <button id='b1' class="btn btn-outline-light ms-auto" onclick="window.location.href='/logout'">Log out</button>
+                </div>
+            </nav>
+            <div class="container">
+
+                <div class="heading">
+                    <h1> Parking Lots </h1>
+                </div>
+
+                <div class="container mt-5">
+                    <div class="row">
+                    {% for lot in parking_lot %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card border shadow-sm h-100 text-white"
+                        style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #1f1f1f, #2b2b2b);">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ lot.prime_location }}</h5>
+                            <p class="card-text">{{ lot.address }}</p>
+                            <p>
+                            <a href="#" class="text-success text-decoration-none me-2" data-bs-toggle="modal" data-bs-target="#editModal{{ lot.id }}">Edit</a>
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editModal{{ lot.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ lot.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content bg-dark text-white border-dark">
+                                        <div class="modal-header">
+                                        <h3 class="modal-title" id="editModalLabel{{ lot.id }}">Edit Lot</h3>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                        <form action="{{ url_for('edit_lot', lot_id=lot.id) }}" method="POST">
+                                            <div class="mb-3">
+                                            <label for="prime_location{{ lot.id }}" class="form-label">Prime Location</label>
+                                            <input type="text" class="form-control" id="prime_location{{ lot.id }}" name="prime_location" value="{{ lot.prime_location }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                            <label for="address{{ lot.id }}" class="form-label">Address</label>
+                                            <input type="text" class="form-control" id="address{{ lot.id }}" name="address" value="{{ lot.address }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                            <label for="pincode{{ lot.id }}" class="form-label">Pincode</label>
+                                            <input type="number" class="form-control" id="pincode{{ lot.id }}" name="pincode" value="{{ lot.pincode }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                            <label for="price{{ lot.id }}" class="form-label">Price</label>
+                                            <input type="text" class="form-control" id="price{{ lot.id }}" name="price" value="{{ lot.price }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                            <label for="max_spot{{ lot.id }}" class="form-label">Maximum Spot</label>
+                                            <input type="number" class="form-control" id="max_spot{{ lot.id }}" name="max_spot" value="{{ lot.max_spot }}" required>
+                                            </div>
+                                            <div class="text-center mt-4">
+                                            <button type="submit" class="btn btn-success">Save Changes</button>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <a href="#" class="text-danger text-decoration-none" data-bs-toggle="modal" data-bs-target="#deleteModal{{ lot.id }}">Delete</a>
+                            <!-- Delete Modal for lot {{ lot.id }} -->
+                            <div class="modal fade" id="deleteModal{{ lot.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ lot.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content text-white"
+                                style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #1f1f1f, #2b2b2b);">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ lot.id }}">Confirm Delete</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete "<strong>{{ lot.prime_location }}</strong>"?
+                                    </div>
+                                    <div class="modal-footer">
+                                    <form method="POST" action="{{ url_for('delete_lot', lot_id=lot.id) }}">
+                                        <button type="submit" class="btn btn-danger">Yes</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    </form>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            </p>
+                            <p class="">Max_spots: {{ lot.max_spot }}</p>
+                            <p class="">Price: ₹{{ lot.price }}</p>
+                
+                            <!-- Spot Status Blocks -->
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for spot in lot.spots %}
+                                    <button class="border rounded text-center text-white {% if spot.status.value == 'A' %}bg-success{% else %}bg-danger{% endif %}" 
+                                            style="width: 35px; height: 35px; line-height: 35px;" 
+                                            data-bs-toggle="modal" data-bs-target="#spotModal{{ spot.id }}">
+                                        {{ spot.status.value }}
+                                    </button>
+                                
+                                    <!-- Modal for each spot -->
+                                    <div class="modal fade" id="spotModal{{ spot.id }}" tabindex="-1" aria-labelledby="spotModalLabel{{ spot.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content text-white" 
+                                                 style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #1f1f1f, #2b2b2b);">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="spotModalLabel{{ spot.id }}">Spot Details</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                
+                                                    <p><strong>Spot ID:</strong> {{ spot.id }}</p>
+                                                    <p><strong>Status:</strong> {{ 'Available' if spot.status.value == 'A' else 'Occupied' }}</p>
+                                
+                                                    {% if spot.status.value == 'A' %}
+                                                        <!-- Delete Spot Form -->
+                                                        <form action="{{ url_for('delete_spot', spot_id=spot.id) }}" method="POST">
+                                                            <button type="submit" class="btn btn-danger">Delete Spot</button>
+                                                        </form>
+                                                    {% else %}
+                                                        {% set reservation = spot.reservations[-1] if spot.reservations else None %}
+                                                        {% if reservation %}
+                                                            <p><strong>Vehicle Number:</strong> {{ reservation.vehicle_number }}</p>
+                                                            <p><strong>User ID:</strong> {{ reservation.user.id }}</p>
+                                                            <p><strong>Username:</strong> {{ reservation.user.username }}</p>
+                                                        {% else %}
+                                                            <p>No reservation data.</p>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                </div>
+                                
+                        </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Modal Button & Modal (navbar ke niche body me) -->
+                <div class="mt-4 text-center">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn bg-dark text-white border-dark" data-bs-toggle="modal" data-bs-target="#addLotModal">
+                        + Add Lot
+                    </button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="addLotModal" tabindex="-1" aria-labelledby="addLotModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content text-white border-dark"
+                        style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #1f1f1f, #2b2b2b);">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="addLotModalLabel">Add New Lot</h3>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/add_lot" method="POST">
+                                    <div class="mb-3">
+                                        <label for="prime_location" class="form-label">Prime Location</label>
+                                        <input type="text" class="form-control" id="prime_location" name="prime_location" placeholder="Location Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="pincode" class="form-label">Pincode</label>
+                                        <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Pincode" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="price" class="form-label">Price</label>
+                                        <input type="text" class="form-control" id="price" name="price" step="0.01" min="0" placeholder="Price" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="max_spot" class="form-label">Maximum Spot</label>
+                                        <input type="number" class="form-control" id="max_spot" name="max_spot" placeholder="Maximum Spot" required>
+                                    </div>
+                                    <div class="mt-4 text-center">
+                                        <button type="submit" class="btn btn-success">Save Lot</button>
+                                    </div>
+                                    </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+
+
+        <!-- User Dashboard -->
+        
+        {% elif role == 'user' %}
+        <div>
+            <nav class="navbar navbar-expand-lg" 
+                style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #2c2c2c, #2b2b2b); width: 100%;">   
+                <div class="container-fluid d-flex justify-content-between w-100 px-3">
+                    <!-- Left: Welcome Admin -->
+                    <a class="navbar-brand me-auto text-white" href="{{ url_for('dashboard') }}">Welcome {{username}}</a>
+
+                    <!-- Center: Navigation Links -->
+                    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                        <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('dashboard') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('user_summary') }}">Summary</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</a>                              
+                            <!-- Edit Profile Modal -->
+                            <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content text-white" 
+                                style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #2c2c2c, #2b2b2b);">
+                                    <div class="modal-header">
+                                    <h3 class="modal-title" id="editProfileModalLabel">Edit Profile</h3>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <form action="{{ url_for('edit_profile') }}" method="POST">
+                                        <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" value="{{ username }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="text" class="form-control" id="password" name="password" value="{{ password }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <input type="text" class="form-control" id="address" name="address" value="{{ address }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                        <label for="pincode" class="form-label">Pincode</label>
+                                        <input type="number" class="form-control" id="pincode" name="pincode" value="{{ session['user_pincode'] }}" required>
+                                        </div>
+                                        <div class="text-center mt-4">
+                                        <button type="submit" class="btn btn-success">Save Changes</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+  
+                        </li>
+                        </ul>
+                    </div>
+
+                    <!-- Right: Logout Button -->
+                    <button id='b1' class="btn btn-outline-light ms-auto" onclick="window.location.href='/logout'">Log out</button>
+                </div>
+            </nav>
+            <div class="container mt-5">
+
+                
+            
+                <!-- Booked Slots Table -->
+                <h3 class="mb-4 text-center text-white">Your Booked Slots</h3>
+                <table class="table table-dark table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>Lot ID</th>
+                            <th>Location</th>
+                            <th>Vehicle No.</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in reservations %}
+                        <tr>
+                            <td>{{ res.spot.lot.id }}</td>
+                            <td>{{ res.spot.lot.prime_location }}</td>
+                            <td>{{ res.vehicle_number }}</td>
+                            <td class="text-success">Active</td>
+                            <td>{{ res.parking_timestamp.strftime('%I:%M %p') }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('release_slot', reservation_id=res.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Release</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6">No active bookings.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+                <!-- Book Slot Button -->
+                <div class="text-center mb-4">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#bookSlotModal">+ Book Slot</button>
+                </div>
+            
+                <!-- Book Slot Modal -->
+                <div class="modal fade" id="bookSlotModal" tabindex="-1" aria-labelledby="bookSlotModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content text-white border-dark"
+                        style="background: linear-gradient(to right, #0d0d0d, #1a1a1a, #1f1f1f, #2b2b2b);">
+                            <form action="{{ url_for('book_slot') }}" method="POST" class="modal-contenttext-white">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="bookSlotModalLabel">Book a Parking Slot</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Searchable Dropdown -->
+                                    <div class="mb-3">
+                                        <label for="lot_id" class="form-label">Select Parking Lot</label>
+                                        <input class="form-control" list="lotOptions" id="lotSearch" name="lot_id" placeholder="Type to search..." required>
+                                        <datalist id="lotOptions">
+                                            {% for lot in parking_lots %}
+                                                <option value="{{ lot.id }}">{{ lot.prime_location }}</option>
+                                            {% endfor %}
+                                        </datalist>
+                                    </div>
+                                    <!-- Vehicle Number -->
+                                    <div class="mb-3">
+                                        <label for="vehicle_number" class="form-label">Vehicle Number</label>
+                                        <input type="text" class="form-control" name="vehicle_number" id="vehicle_number" placeholder="Enter vehicle number" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Book Slot</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        {% else %}
+            <h2>Invalid Role</h2>
+        {% endif %}
+</body>
+</html>
